@@ -17,7 +17,6 @@ void FP_Tree::insertNode(list<int> &inputList, int &value)
 			Node * newNode = new Node(NodeAmount, itemId, NULL);
 			Temp->childByItem.insert(Node::IDandNode(itemId, newNode));
 			newNode->value = value;
-			//NodeValueList.insert(pair<int, int >(NodeAmount, 1));//
 			NodeAmount++;
 
 			//判斷是否為直樹
@@ -50,7 +49,6 @@ void FP_Tree::insertNode(list<int> &inputList, int &value)
 		{
 			//b:將Temp 移至該點 
 			Temp = it_Next->second;
-			//NodeValueList[Temp->nodeId]++;//c:將該點之value累加
 			Temp->value += value;
 		}
 	}
@@ -59,62 +57,52 @@ void FP_Tree::insertNode(list<int> &inputList, int &value)
 
 void FP_Tree::Loop()
 {
+
+	//從可用的Item表中 一一處理
 	VaildItem::reverse_iterator it_VaildItem = EachItemList.rbegin();
 	for (; it_VaildItem != EachItemList.rend(); it_VaildItem++)
 	{
-		vector<list<int>> listArr(it_VaildItem->second.mList.size());
-		vector<int> listValue(it_VaildItem->second.mList.size());
+		//建立子樹的串列與該串列的value
+		vector<list<int>> subTree_ListArr(it_VaildItem->second.mList.size());
+		vector<int> subTree_Listvalue(it_VaildItem->second.mList.size());
+		
+		//subTree_ListArr的index
 		int index_ListArr = 0;
 
-		bucket newVaildItem(100000);
-
+		//計算個別Item在該樹中所有Node的value總和
+		bucket sumOfItemValue(100000);
 		int sumBotton = 0;
 
-		//map<int, int> nodeValue;
 
+		//從當前迴圈中item的mList中 挑出所屬的每一Node 一一處理(爬升)
 		list<Node*>::iterator it_List = it_VaildItem->second.mList.begin();
 		for (; it_List != it_VaildItem->second.mList.end(); it_List++)
 		{
-
-			Node* bottonNode = *it_List;
+			
+			Node* bottonNode = *it_List;//爬升前最底下的Node 
 			Node* curNode = bottonNode;
-			listValue[index_ListArr] = bottonNode->value;
+			subTree_Listvalue[index_ListArr] = bottonNode->value;
 			sumBotton += bottonNode->value;
+			
+			//開始爬升
 			while (1)
 			{
 				curNode = curNode->parent;
 				if (curNode == NodePool.get())break;
 
-				//將值加於nodeValue
-				//map<int, int>::iterator it_NodeValue = nodeValue.find(curNode->nodeId);
-				//if (it_NodeValue != nodeValue.end())
-				//{
-				//	//有找到
-				//	it_NodeValue->second += bottonNode->value;
-				//	newVaildItem.arr[curNode->itemId] += bottonNode->value;
-
-				//}
-				//else
-				//{
-				//	//沒找到
-				//	nodeValue.insert(pair<int, int>(curNode->nodeId, bottonNode->value));
-				//	
-				//}
-
-
 				//將值加於新的VaildItem
-				if (newVaildItem.arr[curNode->itemId] != -1)
+				if (sumOfItemValue.arr[curNode->itemId] != -1)
 				{
-					newVaildItem.arr[curNode->itemId] += bottonNode->value;
+					sumOfItemValue.arr[curNode->itemId] += bottonNode->value;
 				}
 				else
 				{
-					newVaildItem.insert(curNode->itemId, bottonNode->value);
+					sumOfItemValue.insert(curNode->itemId, bottonNode->value);
 				}
 
 				//生成建樹串列群
 
-				listArr[index_ListArr].push_front(curNode->itemId);
+				subTree_ListArr[index_ListArr].push_front(curNode->itemId);
 
 			}
 			//計算該次爬升的長度 並找出屢次的最大值
@@ -126,29 +114,31 @@ void FP_Tree::Loop()
 		//移除掉建樹串列群中的不合格item
 		for (int index = 0; index < index_ListArr; index++)
 		{
-			list<int> ::iterator it_List = listArr[index].begin();
-			for (; it_List != listArr[index].end();)
-				if (newVaildItem.arr[*it_List] < MinSup)
-					it_List = listArr[index].erase(it_List);
+			list<int> ::iterator it_List = subTree_ListArr[index].begin();
+			for (; it_List != subTree_ListArr[index].end();)
+				//若該item之value總和未達MinSup 刪之
+				if (sumOfItemValue.arr[*it_List] < MinSup)
+					it_List = subTree_ListArr[index].erase(it_List);
 				else
 					it_List++;
 		}
 
-		//建新樹
+		//將當前的搜尋的資訊輸出
 		string str1 = TreeName;
 		str1 += " - ";
 		str1 += to_string(it_VaildItem->first);
 		out << str1 << "  value :" << to_string(sumBotton) << endl;
 
+		//建立新的子樹
 		FP_Tree mNewFP_Tree(MinSup, str1);
 		for (int index = 0; index < index_ListArr; index++)
 		{
-			mNewFP_Tree.insertNode(listArr[index], listValue[index]);
+			mNewFP_Tree.insertNode(subTree_ListArr[index], subTree_Listvalue[index]);
 		}
 
 
 
-
+		//若該不為直樹 則繼續loop
 		if (!mNewFP_Tree.isStraight)
 		{
 			mNewFP_Tree.Loop();

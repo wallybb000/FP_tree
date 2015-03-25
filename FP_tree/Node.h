@@ -6,6 +6,8 @@
 #include <string>
 #include <fstream>
 #include <algorithm>
+#include <iostream>
+#include <sstream>
 #include <queue>
 using namespace std;
 
@@ -128,6 +130,7 @@ public:
 		:NodePool(new Node(-1, -1, NULL)), NodeAmount(0), MinSup(Minsup), TreeName(name), isStraight(true)
 	{
 	};
+
 	void setMinSup(int i){ MinSup = i; }
 	void insertNode(list<int> &inputList, int &value);
 	void Loop();
@@ -173,6 +176,41 @@ public:
 
 	
 	}
+
+	void insertNodeFromSerial(string & SerialString)
+	{
+
+		int NodeAmount;
+		stringstream ss(SerialString);
+		ss >> NodeAmount;
+	
+		Node **NodePtrArr = new Node*[1000000]{NULL};
+		
+		for (int i = 0; i < 4; i++)
+		{
+			int temp;
+			ss >> temp;
+		}
+
+		for (int NodeIndex = 0; NodeIndex < NodeAmount; NodeAmount++)
+		{
+			int nodeID, parentID, value, itemID;
+			ss >> nodeID;
+			ss >> parentID;
+			ss >> itemID;
+			ss >> value;
+			if (parentID == -1)
+				NodePtrArr[nodeID] = new Node(nodeID, itemID, NodePool.get());
+			else
+
+				NodePtrArr[nodeID] = new Node(nodeID, itemID, NodePtrArr[parentID]);
+			value
+
+		}
+
+
+	}
+
 	//void loop(map<int, int> &pre_NodeValueList, VaildItem &pre_VaildItem, list<int> pre_list);
 };
 class DB_Scanner
