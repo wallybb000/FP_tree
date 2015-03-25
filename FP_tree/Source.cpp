@@ -10,7 +10,7 @@ void main()
 {
 	char file[1000];
 	cin >> file;
-	int count;
+	double count;
 	cin >> count;
 
 	out.open("out.txt", ios::trunc);
@@ -31,10 +31,16 @@ void main()
 	temp = mFP_Tree.Serialization();
 	cout << temp;
 
+
+	FP_Tree tempTree;
+	tempTree.setMinSup(db.Total_Transaction*count);
+	
+	tempTree.insertNodeFromSerial(temp);
+
 	system("PAUSE");
 	start = clock();
-
-	mFP_Tree.Loop();
+	tempTree.Loop();
+	//mFP_Tree.Loop();
 		
 
 	

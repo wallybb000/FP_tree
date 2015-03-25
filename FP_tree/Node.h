@@ -134,82 +134,8 @@ public:
 	void setMinSup(int i){ MinSup = i; }
 	void insertNode(list<int> &inputList, int &value);
 	void Loop();
-	string Serialization()
-	{
-	
-		string SerialString;
-
-		SerialString = to_string(NodeAmount)+"\n";
-		
-		queue<Node *> NodeQueue;
-		NodeQueue.push(NodePool.get());
-
-		while (1)
-		{
-			if (NodeQueue.empty())break;
-			
-			Node * curNode = NodeQueue.front();
-			NodeQueue.pop();
-			
-			SerialString += to_string(curNode->nodeId) + " ";
-			if (curNode->parent != NULL)
-				SerialString += to_string(curNode->parent->nodeId) + " ";
-			else
-				SerialString += to_string(-1) + " ";
-
-			SerialString += to_string(curNode->itemId) + " ";
-			SerialString += to_string(curNode->value) + "\n";
-
-			Node::IDtoNode::iterator it_Child = curNode->childByItem.begin();
-			
-			for (; it_Child != curNode->childByItem.end(); it_Child++)
-				NodeQueue.push(it_Child->second);
-
-		}
-
-
-
-			//¥Ñstack¨ú¥X
-		return SerialString;
-
-		
-
-	
-	}
-
-	void insertNodeFromSerial(string & SerialString)
-	{
-
-		int NodeAmount;
-		stringstream ss(SerialString);
-		ss >> NodeAmount;
-	
-		Node **NodePtrArr = new Node*[1000000]{NULL};
-		
-		for (int i = 0; i < 4; i++)
-		{
-			int temp;
-			ss >> temp;
-		}
-
-		for (int NodeIndex = 0; NodeIndex < NodeAmount; NodeAmount++)
-		{
-			int nodeID, parentID, value, itemID;
-			ss >> nodeID;
-			ss >> parentID;
-			ss >> itemID;
-			ss >> value;
-			if (parentID == -1)
-				NodePtrArr[nodeID] = new Node(nodeID, itemID, NodePool.get());
-			else
-
-				NodePtrArr[nodeID] = new Node(nodeID, itemID, NodePtrArr[parentID]);
-			value
-
-		}
-
-
-	}
+	string Serialization();
+	void insertNodeFromSerial(string & SerialString);
 
 	//void loop(map<int, int> &pre_NodeValueList, VaildItem &pre_VaildItem, list<int> pre_list);
 };

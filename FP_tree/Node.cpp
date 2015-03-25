@@ -47,7 +47,14 @@ void FP_Tree::insertNode(list<int> &inputList, int &value)
 		}
 		else
 		{
+
 			//b:將Temp 移至該點 
+			VaildItem::iterator it_ItemList = EachItemList.find(itemId);
+			if (it_ItemList == EachItemList.end())
+			{
+				cout << ":fjeofijeifjeoif";
+			}
+			it_ItemList->second.value+=value;
 			Temp = it_Next->second;
 			Temp->value += value;
 		}
@@ -197,4 +204,104 @@ void FP_Tree::Loop()
 
 
 }
+
+string FP_Tree::Serialization()
+	{
+	
+		string SerialString;
+
+		SerialString = to_string(NodeAmount)+"\n";
+		
+		queue<Node *> NodeQueue;
+		NodeQueue.push(NodePool.get());
+
+		while (1)
+		{
+			if (NodeQueue.empty())break;
+			
+			Node * curNode = NodeQueue.front();
+			NodeQueue.pop();
+			
+			SerialString += to_string(curNode->nodeId) + " ";
+			if (curNode->parent != NULL)
+				SerialString += to_string(curNode->parent->nodeId) + " ";
+			else
+				SerialString += to_string(-1) + " ";
+
+			SerialString += to_string(curNode->itemId) + " ";
+			SerialString += to_string(curNode->value) + "\n";
+
+			Node::IDtoNode::iterator it_Child = curNode->childByItem.begin();
+			
+			for (; it_Child != curNode->childByItem.end(); it_Child++)
+				NodeQueue.push(it_Child->second);
+
+		}
+
+
+
+			//由stack取出
+		return SerialString;
+
+		
+
+	
+	}
+
+void FP_Tree::insertNodeFromSerial(string & SerialString)
+	{
+
+		int NodeAmount;
+		stringstream ss(SerialString);
+		ss >> NodeAmount;
+	
+		Node **NodePtrArr = new Node*[NodeAmount]{NULL};
+		
+		for (int i = 0; i < 4; i++)
+		{
+			int temp;
+			ss >> temp;
+		}
+
+		for (int NodeIndex = 0; NodeIndex < NodeAmount; NodeIndex++)
+		{
+			int nodeID, parentID, value, itemID;
+			Node * parentPointer;
+			ss >> nodeID;
+			ss >> parentID;
+			ss >> itemID;
+			ss >> value;
+			if (parentID == -1)
+				parentPointer = NodePool.get();
+			else
+				parentPointer = NodePtrArr[parentID];
+
+			NodePtrArr[nodeID] = new Node(nodeID, itemID, parentPointer);
+			NodePtrArr[nodeID]->value = value;
+
+			parentPointer->insertChild(NodePtrArr[nodeID]);
+			this->NodeAmount++;
+			
+			VaildItem::iterator it_ItemList = EachItemList.find(itemID);
+			if (it_ItemList == EachItemList.end())
+			{
+				ValueAndList newValueAndList;
+				newValueAndList.mList.push_back(NodePtrArr[nodeID]);
+				newValueAndList.value = NodePtrArr[nodeID]->value;
+				EachItemList.insert(pair<int, ValueAndList  >(itemID, newValueAndList));
+
+			}
+			else
+			{
+				EachItemList[itemID].mList.push_back(NodePtrArr[nodeID]);
+				EachItemList[itemID].value += NodePtrArr[nodeID]->value;
+			}
+
+
+
+		}
+		
+		delete[] NodePtrArr;
+
+	}
 
