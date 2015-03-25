@@ -27,6 +27,11 @@ void main()
 		mFP_Tree.insertNode(inputItemList , initValue);
 	}
 
+	string temp;
+	temp = mFP_Tree.Serialization();
+	cout << temp;
+
+	system("PAUSE");
 	start = clock();
 
 	mFP_Tree.Loop();
