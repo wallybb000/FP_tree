@@ -132,6 +132,7 @@ public:
 	};
 
 	void setMinSup(int i){ MinSup = i; }
+	int getMinSup(){ return MinSup; }
 	void insertNode(list<int> &inputList, int &value);
 	void Loop();
 	string Serialization();

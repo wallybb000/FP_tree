@@ -253,8 +253,10 @@ void FP_Tree::insertNodeFromSerial(string & SerialString)
 
 		int NodeAmount;
 		stringstream ss(SerialString);
+		int temp;
+		ss >> temp;
 		ss >> NodeAmount;
-	
+		this->setMinSup( temp);
 		Node **NodePtrArr = new Node*[NodeAmount]{NULL};
 		
 		for (int i = 0; i < 4; i++)
