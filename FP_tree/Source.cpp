@@ -33,6 +33,8 @@ void main()
 
 		cout << "Data second loading..." << endl;
 		int initValue = 1;
+
+		db.openBinaryDatabase();
 		list<int> inputItemList;
 		while (db.readLine(inputItemList))
 			mFP_Tree.insertNode(inputItemList, initValue);

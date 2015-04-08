@@ -28,13 +28,12 @@ public:
 	Node* parent;
 	Node* Next;
 public:
-	Node(int NId, int ItemID, Node * Parent) :nodeId(NId), itemId(ItemID), parent(Parent), childAmount(0), value(-1){
-		};
+	Node(int NId, int ItemID, Node * Parent) 
+		:nodeId(NId), itemId(ItemID), parent(Parent), childAmount(0), value(-1)
+	{};
 
 	void insertChild(Node * input)
 	{
-
-
 		childByItem.insert(IDandNode(childAmount, input));
 		childAmount++;
 	};
@@ -42,7 +41,6 @@ public:
 
 	~Node()
 	{
-	
 	}
 
 };
@@ -82,7 +80,6 @@ class FP_Tree{
 
 		bucket(int Amount) :arr(Amount, initValue)
 		{
-
 		}
 
 		void insert(int index, int value)
@@ -102,8 +99,6 @@ class FP_Tree{
 			}
 			hasBeInsert.clear();
 		}
-
-
 	};
 
 private:
@@ -138,12 +133,12 @@ public:
 	string Serialization();
 	void insertNodeFromSerial(string & SerialString);
 
-	//void loop(map<int, int> &pre_NodeValueList, VaildItem &pre_VaildItem, list<int> pre_list);
 };
 class DB_Scanner
 {
 public:
 	ifstream inFile;
+	ifstream inFileBinary;
 	int Total_Transaction;
 	string fileName;
 	double minSup;
@@ -152,7 +147,7 @@ public:
 	int allItemTable[15000];
 
 	DB_Scanner(char * inFileName, double minsup)
-		:inFile(inFileName, std::ifstream::in), Total_Transaction(0), limit(0), minSup(minsup),fileName(inFileName)
+		: Total_Transaction(0), limit(0), minSup(minsup),fileName(inFileName)
 	{
 		for (int i = 0; i < 15000; i++)
 		{
@@ -163,12 +158,23 @@ public:
 
 	void firstCheck()
 	{
-		if (!inFile.is_open())return;
+		inFile.open(fileName, ios::in);
+
+		string newFileName(fileName);
+		newFileName = "S_" + newFileName;
+		ofstream out(newFileName.c_str(), ios::binary);
+		
+		if (!inFile.is_open()|| !out.is_open()) return;
 
 		int temp=0;
 		char inputC;
+		int buf_index = 0;
 		while (!inFile.eof())
 		{
+
+			int buf[1000];
+			
+
 			inputC = inFile.get();
 			if (inputC  >47)
 			{
@@ -178,53 +184,60 @@ public:
 			else if (inputC == ',')
 			{
 				++allItemTable[temp];
+				buf[++buf_index] = temp;
 				temp = 0;
 			}
 			else if (inputC == '\n')
 			{
+				//存入buf
 				++allItemTable[temp];
+				buf[++buf_index] = temp;
 				temp = 0;
+				//將buf存入二進制
+				
+				buf[0] = buf_index ;
+				out.write((char *)&buf, sizeof(int)*(buf_index+1));
 				++Total_Transaction;
+				buf_index = 0;
 			}
 		}
 
 		inFile.close();
-		inFile.open(fileName);
 
+	}
+
+	bool openBinaryDatabase()
+	{
+		string newFileName(fileName);
+		newFileName = "S_" + newFileName;
+		inFileBinary.open(newFileName.c_str(), ios::binary);
+		if (inFileBinary.is_open() && !inFileBinary.eof())return true;
+		else
+			return false;
 	}
 
 	bool readLine(list<int> &inArr)
 	{
-		inArr.clear();
-		int temp = 0;
-		char inputC;
-		while (!inFile.eof())
-		{
-			inputC = inFile.get();
-			if (inputC  >47)
-			{
-				temp *= 10;
-				temp += inputC - 48;
-			}
-			else if (inputC == ',')
-			{
-				if(allItemTable[temp]>minSup)
-					inArr.push_back(temp);
-				temp = 0;
-			}
-			else if (inputC == '\n')
-			{
-				
-				if(allItemTable[temp]>minSup)
-					inArr.push_back(temp);
-				temp = 0;
-				return true;
+		if (!inFileBinary.is_open()||inFileBinary.eof())return false;
 		
-				
-			}
-		}
-		return false;
-	
-	}
+		inArr.clear();
+		int count;
+		inFileBinary.read((char *)& count, sizeof(count));
 
+		for (int i = 0; i < count; i++)
+		{
+
+			int buf;
+			inFileBinary.read((char *)& buf, sizeof(buf));
+
+			inArr.push_back(buf);
+		}
+
+		return true;
+		
+	}
+	void closeBinaryDatabase()
+	{
+		inFileBinary.close();
+	}
 };
