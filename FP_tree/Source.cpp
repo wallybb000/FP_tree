@@ -19,23 +19,26 @@ void main()
 	if (select == 1){
 
 		SocketClass mSocketClass(0);
+		double count;
 		char file[1000];
+
 		cout << "Input the Database filename:" << endl;
 		cin >> file;
-		double count;
 		cout << "Input Minimum Supple" << endl;
 		cin >> count;
-
-		cout << "Database first loading..." << endl;
+		
+		/*********************************************************/
 		DB_Scanner db(file, 0);
+		cout << "Database first loading..." << endl;
 		db.firstCheck();
-		db.minSup = db.Total_Transaction*count+0.5;
+		db.minSup = count;
 
 		out.open("out.txt", ios::trunc);
-		mFP_Tree.setMinSup(db.Total_Transaction*count+0.5);
+		mFP_Tree.setMinSup(count);
 		
 		cout << mFP_Tree.getMinSup() << endl;
 
+		/*********************************************************/
 		cout << "Data second loading..." << endl;
 		int initValue = 1;
 
@@ -46,6 +49,7 @@ void main()
 
 
 
+		/*********************************************************/
 		cout << "Starting looping" << endl;
 		start = clock();
 		{
@@ -57,6 +61,7 @@ void main()
 		out.close();
 
 		
+		/*********************************************************/
 
 		cout << "Starting communication..." << endl;
 		string FPTreeSerial;
@@ -77,14 +82,17 @@ void main()
 		char * Buffer = new char[10000000];
 
 		
+		/*********************************************************/
 		cout << "Starting communication..." << endl;
 		mSocketClass.Listen();
 		mSocketClass.Connect(Buffer);
 
+		/*********************************************************/
 
 		cout << "Building FP_Tree..." << endl;
 		mFP_Tree.insertNodeFromSerial(string(Buffer));
 
+		/*********************************************************/
 		cout << "Starting FP_Tree looping..." << endl;
 		start = clock();
 		{

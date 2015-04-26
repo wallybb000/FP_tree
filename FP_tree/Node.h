@@ -1,7 +1,6 @@
 #ifndef NODEH
 #define NODEH
 #include "Header.h"
-
 using namespace std;
 extern ofstream out;
 class Node

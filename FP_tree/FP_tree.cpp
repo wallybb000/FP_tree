@@ -171,34 +171,24 @@ void FP_Tree::Loop()
 				}
 				else
 				{
-
+					cout << "error";
 				}
 			}
 			string str2 = str1;
-			list<Node *>::iterator it_ResultList1 = resultList.begin();
-			list<string>::iterator it_stringList1 = stringList.begin();
-			for (; it_ResultList1 != resultList.end(); it_ResultList1++, it_stringList1++)
+			list<Node *>::reverse_iterator it_ResultList1 = resultList.rbegin();
+			for (; it_ResultList1 != resultList.rend(); it_ResultList1++)
 			{
-
-				list<string>::iterator it_stringList2 = it_stringList1;
-				list<Node *>::iterator it_ResultList2 = it_ResultList1;
-				for (; it_ResultList2 != resultList.end(); it_ResultList2++, it_stringList2++)
-				{
-					out << str2 << " - " << *it_stringList2
-						<< " value :" << to_string((*it_ResultList2)->value) << endl;
-
-				}
-				str2 += " - ";
-				str2 += *it_stringList1;
-
+				str1 += " - ";
+				str1 += to_string((*it_ResultList1)->itemId);
+				out << str1 << "  value :" << to_string(sumBotton) << endl;
 			}
 
 
 
 
 		}
-
 		*/
+		
 	}
 
 
