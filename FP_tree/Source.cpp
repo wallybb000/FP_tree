@@ -1,5 +1,8 @@
 ﻿#include "Node.h"
 #include "SocketClass.h"
+#include "Header.h"
+#include "FP_tree.h"
+#include "DB_Scanner.h"
 #include <ctime>
 
 clock_t start, stop;
@@ -26,10 +29,12 @@ void main()
 		cout << "Database first loading..." << endl;
 		DB_Scanner db(file, 0);
 		db.firstCheck();
-		db.minSup = db.Total_Transaction*count;
+		db.minSup = db.Total_Transaction*count+0.5;
 
 		out.open("out.txt", ios::trunc);
-		mFP_Tree.setMinSup(db.Total_Transaction*count);
+		mFP_Tree.setMinSup(db.Total_Transaction*count+0.5);
+		
+		cout << mFP_Tree.getMinSup() << endl;
 
 		cout << "Data second loading..." << endl;
 		int initValue = 1;
