@@ -30,8 +30,12 @@ public:
 	
 	void Listen();
 	
-	void Accept(char * message);
-	void Connect(char * message);
+	void Accept();
+	void Send(char * message, int len, int clinetId);
+
+
+	void Connect();
+	void receive(char ** message, int &len);
 
 };
 #endif

@@ -23,5 +23,6 @@ public:
 	bool openBinaryDatabase();
 	bool readLine(list<int> &inArr);
 	void closeBinaryDatabase();
+
 };
 #endif

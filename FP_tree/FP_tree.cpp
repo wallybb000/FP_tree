@@ -1,6 +1,8 @@
 #include "Header.h"
 #include "Node.h"
 #include "FP_tree.h"
+
+
 void FP_Tree::insertNode(list<int> &inputList, int &value)
 {
 	Node * Temp = NodePool.get();
@@ -197,12 +199,11 @@ void FP_Tree::Loop()
 
 }
 
-string FP_Tree::Serialization()
+void FP_Tree::Serialization(stringstream& SerialString)
 	{
-	
-		string SerialString;
-
-		SerialString = to_string(NodeAmount)+"\n";
+		
+		SerialString.write((char*)&this->MinSup, sizeof(this->MinSup));
+		SerialString.write((char*)&NodeAmount, sizeof(NodeAmount));
 		
 		queue<Node *> NodeQueue;
 		NodeQueue.push(NodePool.get());
@@ -214,88 +215,76 @@ string FP_Tree::Serialization()
 			Node * curNode = NodeQueue.front();
 			NodeQueue.pop();
 			
-			SerialString += to_string(curNode->nodeId) + " ";
+			int nodeId = -1;
 			if (curNode->parent != NULL)
-				SerialString += to_string(curNode->parent->nodeId) + " ";
-			else
-				SerialString += to_string(-1) + " ";
+			{
+				nodeId = curNode->nodeId;
+				SerialString.write((char*)&nodeId, sizeof(nodeId));
+				SerialString.write((char*)&curNode->parent->nodeId, sizeof(curNode->parent->nodeId));
+				SerialString.write((char*)&curNode->itemId, sizeof(curNode->itemId));
+				SerialString.write((char*)&curNode->value, sizeof(curNode->value));
 
-			SerialString += to_string(curNode->itemId) + " ";
-			SerialString += to_string(curNode->value) + "\n";
-
+			}
 			Node::IDtoNode::iterator it_Child = curNode->childByItem.begin();
 			
 			for (; it_Child != curNode->childByItem.end(); it_Child++)
 				NodeQueue.push(it_Child->second);
 
 		}
-
-
-
-			//¥Ñstack¨ú¥X
-		return SerialString;
-
-		
-
 	
 	}
 
-void FP_Tree::insertNodeFromSerial(string & SerialString)
+void FP_Tree::insertNodeFromSerial(stringstream & SerialString)
 	{
 
-		int NodeAmount;
-		stringstream ss(SerialString);
-		int temp;
-		ss >> temp;
-		ss >> NodeAmount;
-		this->setMinSup( temp);
-		Node **NodePtrArr = new Node*[NodeAmount]{NULL};
+		int nodeAmount;
+		int minSup;
 		
-		for (int i = 0; i < 4; i++)
-		{
-			int temp;
-			ss >> temp;
-		}
-
-		for (int NodeIndex = 0; NodeIndex < NodeAmount; NodeIndex++)
+		SerialString.read((char*)&minSup, sizeof(minSup));
+		SerialString.read((char*)&nodeAmount, sizeof(int));
+		this->setMinSup( minSup);
+		//this->NodeAmount = nodeAmount;
+		Node **nodePtrArr = new Node*[nodeAmount]{NULL};
+		
+		for (int NodeIndex = 0; NodeIndex < nodeAmount; NodeIndex++)
 		{
 			int nodeID, parentID, value, itemID;
 			Node * parentPointer;
-			ss >> nodeID;
-			ss >> parentID;
-			ss >> itemID;
-			ss >> value;
+			SerialString.read((char*)&nodeID   , sizeof(nodeID));
+			SerialString.read((char*)&parentID , sizeof(parentID));
+			SerialString.read((char*)&itemID   , sizeof(itemID));
+			SerialString.read((char*)&value, sizeof(value));
 			if (parentID == -1)
 				parentPointer = NodePool.get();
 			else
-				parentPointer = NodePtrArr[parentID];
+				parentPointer = nodePtrArr[parentID];
 
-			NodePtrArr[nodeID] = new Node(nodeID, itemID, parentPointer);
-			NodePtrArr[nodeID]->value = value;
+			nodePtrArr[nodeID] = new Node(nodeID, itemID, parentPointer);
+			nodePtrArr[nodeID]->value = value;
 
-			parentPointer->insertChild(NodePtrArr[nodeID]);
+			parentPointer->insertChild(nodePtrArr[nodeID]);
 			this->NodeAmount++;
 			
 			VaildItem::iterator it_ItemList = EachItemList.find(itemID);
 			if (it_ItemList == EachItemList.end())
 			{
 				ValueAndList newValueAndList;
-				newValueAndList.mList.push_back(NodePtrArr[nodeID]);
-				newValueAndList.value = NodePtrArr[nodeID]->value;
+				newValueAndList.mList.push_back(nodePtrArr[nodeID]);
+				newValueAndList.value = nodePtrArr[nodeID]->value;
 				EachItemList.insert(pair<int, ValueAndList  >(itemID, newValueAndList));
 
 			}
 			else
 			{
-				EachItemList[itemID].mList.push_back(NodePtrArr[nodeID]);
-				EachItemList[itemID].value += NodePtrArr[nodeID]->value;
+				EachItemList[itemID].mList.push_back(nodePtrArr[nodeID]);
+				EachItemList[itemID].value += nodePtrArr[nodeID]->value;
 			}
 
 
 
 		}
 		
-		delete[] NodePtrArr;
+		delete[] nodePtrArr;
 
 	}
 

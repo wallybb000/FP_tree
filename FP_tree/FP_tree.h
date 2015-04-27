@@ -102,8 +102,8 @@ public:
 	int getMinSup(){ return MinSup; }
 	void insertNode(list<int> &inputList, int &value);
 	void Loop();
-	string Serialization();
-	void insertNodeFromSerial(string & SerialString);
+	void Serialization(stringstream & SerialString);
+	void insertNodeFromSerial(stringstream & SerialString);
 
 };
 

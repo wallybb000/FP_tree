@@ -37,7 +37,7 @@ void SocketClass::Listen()
 	bind(sListen, (SOCKADDR*)&addr, sizeof(addr));
 	listen(sListen, SOMAXCONN);
 }
-void SocketClass::Accept(char * message)
+void SocketClass::Accept()
 {
 	if (SocketType != Server)return;
 
@@ -52,24 +52,44 @@ void SocketClass::Accept(char * message)
 			printf("server: got connection from %s\n", inet_ntoa(clinetAddr[clinetCount].sin_addr));
 			printf("clinet NO is %d\n", clinetCount);
 
-			//傳送訊息給 client 端
-			send(sConnect[clinetCount], message, (int)strlen(message), 0);
-
-
 			clinetCount++;
+
+
+			
 		}
+
+		if (clinetCount == 3) break;
+
+
 	}
 }
-void SocketClass::Connect(char * message)
+
+void SocketClass::Send(char * message, int len, int clinetId )
+{
+	//傳送訊息給 client 端
+	
+	cout<<"1:" <<send(sConnect[clinetId], (char*)&len, sizeof(len), 0);
+	cout<<"2:" <<send(sConnect[clinetId], message, len, 0);
+}
+
+void SocketClass::Connect()
 {
 
 	if (SocketType != Client)return;
-	
 	connect(sConnect[0], (SOCKADDR*)&addr, sizeof(addr));
-	int messagelen = sizeof(message);
+	cout << "client connecting" << endl;
+
+
+}
+void SocketClass::receive(char ** message ,int &len)
+{
+
 	//接收 server 端的訊息
-	ZeroMemory(message, 10000000);
-	recv(sConnect[0], message, 10000000, 0);
+	
+	recv(sConnect[0], (char*)&len,sizeof(len) , 0);
+	(*message) = new char[len]; 
+	//ZeroMemory(message, len);
+	recv(sConnect[0], *message, len, 0);
 	cout << "Maessage get" << endl;
 
 

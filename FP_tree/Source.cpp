@@ -7,7 +7,7 @@
 
 clock_t start, stop;
 
- ofstream out;
+	 ofstream out;
 void main()
 {
 	cout << "Select  server(1)  or  client(2) : " << endl;
@@ -53,7 +53,7 @@ void main()
 		cout << "Starting looping" << endl;
 		start = clock();
 		{
-			mFP_Tree.Loop();
+			//mFP_Tree.Loop();
 		}
 		stop = clock();
 
@@ -64,33 +64,41 @@ void main()
 		/*********************************************************/
 
 		cout << "Starting communication..." << endl;
-		string FPTreeSerial;
+		stringstream FPTreeSerial;
 
-		FPTreeSerial = to_string(mFP_Tree.getMinSup()) + "\n";
-		FPTreeSerial += mFP_Tree.Serialization();
-		
+	
+		mFP_Tree.Serialization(FPTreeSerial);
 		mSocketClass.Listen();
-		mSocketClass.Accept(const_cast<char*>(FPTreeSerial.c_str()));
-
+		mSocketClass.Accept();
+		for(int i =0 ;i<3;i++)
+		mSocketClass.Send(const_cast<char*>(FPTreeSerial.str().c_str()), FPTreeSerial.str().size(), i);
 	}
 	
 	else if(select ==2)
 	{
-
+		int computingId;
+		cout << "computing id:" << endl;
+		cin >> computingId;
 		SocketClass mSocketClass(1);
-		out.open("out2.txt", ios::trunc);
-		char * Buffer = new char[10000000];
+		string fileName("out");
+		fileName += to_string(computingId) + "txt";
+		out.open(fileName, ios::trunc);
 
 		
 		/*********************************************************/
 		cout << "Starting communication..." << endl;
 		mSocketClass.Listen();
-		mSocketClass.Connect(Buffer);
+		mSocketClass.Connect();
+		int serialLen;
+		char *Buffer;
+		mSocketClass.receive(&Buffer,serialLen);
 
 		/*********************************************************/
+		stringstream FPTreeSerial(string(Buffer,serialLen));
+
 
 		cout << "Building FP_Tree..." << endl;
-		mFP_Tree.insertNodeFromSerial(string(Buffer));
+		mFP_Tree.insertNodeFromSerial(FPTreeSerial);
 
 		/*********************************************************/
 		cout << "Starting FP_Tree looping..." << endl;
@@ -104,6 +112,10 @@ void main()
 		out.close();
 
 	}
+
+
+
+	system("pause");
 
 }
 

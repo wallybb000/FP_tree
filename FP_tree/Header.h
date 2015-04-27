@@ -9,10 +9,9 @@
 #include <string>
 #include <fstream>
 #include <algorithm>
-#include <iostream>
 #include <sstream>
 #include <queue>
 #include <ctime>
-
+#include <ostream>
 
 #endif
