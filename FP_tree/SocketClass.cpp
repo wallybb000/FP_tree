@@ -1,6 +1,6 @@
 #include "SocketClass.h"
 
-SocketClass::SocketClass(int type) :clinetCount(0)
+SocketClass::SocketClass() 
 {
 	int r;
 	WSAData wsaData;
@@ -11,25 +11,23 @@ SocketClass::SocketClass(int type) :clinetCount(0)
 
 
 
-	if (type == 0)
-	{
-		SocketType = Server;
-	}
-	else if (type == 1)
-	{
-		SocketType = Client;
-	}
-
 
 	addr.sin_addr.s_addr = inet_addr("127.0.0.1");
 	addr.sin_family = AF_INET;
 	addr.sin_port = htons(1234);
 
-	for (int i = 0; i < 10; i++)
-		sConnect[i] = socket(AF_INET, SOCK_STREAM, NULL);
+
+	sConnect = socket(AF_INET, SOCK_STREAM, NULL);
 	sListen = socket(AF_INET, SOCK_STREAM, NULL);
 
 
+}
+void SocketClass::setType(int type)
+{
+	if (type == 0)
+		SocketType = Server;
+	else if (type == 1)
+		SocketType = Client;
 }
 void SocketClass::Listen()
 {
@@ -37,60 +35,58 @@ void SocketClass::Listen()
 	bind(sListen, (SOCKADDR*)&addr, sizeof(addr));
 	listen(sListen, SOMAXCONN);
 }
-void SocketClass::Accept()
+SOCKET& SocketClass::Accept()
 {
-	if (SocketType != Server)return;
+	if (SocketType == Server){
+	SOCKET *clientSocket = new SOCKET();
+	std::cout << "waiting..." << endl;
 
-	while (true)
+	SOCKADDR_IN clientAddr;
+
+
+	//clientAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
+	//clientAddr.sin_family = AF_INET;
+	//clientAddr.sin_port = htons(1234);
+
+	int addrlen = sizeof(clientAddr);
+	if ((*clientSocket)=accept(sListen, (SOCKADDR*)&clientAddr, &addrlen))
 	{
-		cout << "waiting..." << endl;
-
-		int addrlen = sizeof(addr);
-		if (sConnect[clinetCount] = accept(sListen, (SOCKADDR*)&clinetAddr[clinetCount], &addrlen))
-		{
-			cout << "a connection was found" << endl;
-			printf("server: got connection from %s\n", inet_ntoa(clinetAddr[clinetCount].sin_addr));
-			printf("clinet NO is %d\n", clinetCount);
-
-			clinetCount++;
-
-
-			
-		}
-
-		if (clinetCount == 3) break;
-
-
+		std::cout << "a connection was found" << endl;
+		printf("server: got connection from %s\n", inet_ntoa(clientAddr.sin_addr));
 	}
-}
 
-void SocketClass::Send(char * message, int len, int clinetId )
-{
-	//傳送訊息給 client 端
-	
-	cout<<"1:" <<send(sConnect[clinetId], (char*)&len, sizeof(len), 0);
-	cout<<"2:" <<send(sConnect[clinetId], message, len, 0);
+	return (*clientSocket);
+}
 }
 
 void SocketClass::Connect()
 {
 
 	if (SocketType != Client)return;
-	connect(sConnect[0], (SOCKADDR*)&addr, sizeof(addr));
-	cout << "client connecting" << endl;
+	connect(sConnect, (SOCKADDR*)&addr, sizeof(addr));
+	std::cout << "client connecting" << endl;
 
 
 }
-void SocketClass::receive(char ** message ,int &len)
+void SocketClass::Send(SOCKET &clientSocket,char * message, int len )
+{
+	//傳送訊息給 client 端
+	
+	std::cout<<"1:" <<send(clientSocket, (char*)&len, sizeof(len), 0);
+	std::cout<<"2:" <<send(clientSocket, message, len, 0);
+}
+
+
+void SocketClass::receive(SOCKET &clientSocket,char ** message ,int &len)
 {
 
 	//接收 server 端的訊息
 	
-	recv(sConnect[0], (char*)&len,sizeof(len) , 0);
+	recv(clientSocket, (char*)&len, sizeof(len), MSG_WAITALL);
 	(*message) = new char[len]; 
-	//ZeroMemory(message, len);
-	recv(sConnect[0], *message, len, 0);
-	cout << "Maessage get" << endl;
+	//&ZeroMemory(message, len);
+	recv(clientSocket, *message, len, MSG_WAITALL);
+	std::cout << "Maessage get" << endl;
 
 
 }

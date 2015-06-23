@@ -1,7 +1,7 @@
 #include "DB_Scanner.h"
 
-DB_Scanner::DB_Scanner(char * inFileName, double minsup)
-	: Total_Transaction(0), limit(0), minSup(minsup), fileName(inFileName)
+DB_Scanner::DB_Scanner()
+	: Total_Transaction(0), limit(0)
 {
 	for (int i = 0; i < 15000; i++)
 	{
@@ -10,7 +10,14 @@ DB_Scanner::DB_Scanner(char * inFileName, double minsup)
 	}
 };
 
+void DB_Scanner::setFileName(string iFileName){
+	fileName = iFileName;
+};
 
+void DB_Scanner::setMinSup(int iMinSup)
+{
+	minSup = iMinSup;
+};
 void DB_Scanner::firstCheck()
 {
 	inFile.open(fileName, ios::in);

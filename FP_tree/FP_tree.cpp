@@ -65,6 +65,9 @@ void FP_Tree::insertNode(list<int> &inputList, int &value)
 	}
 };
 
+void FP_Tree::upScanFromItem(ValueAndList & vaildItem)
+{
+};
 void FP_Tree::Loop()
 {
 
@@ -135,10 +138,11 @@ void FP_Tree::Loop()
 
 		//將當前的搜尋的資訊輸出
 		string str1 = TreeName;
-		
-			str1 += " - ";
-			str1 += to_string(it_VaildItem->first);
-			out << str1 << "  value :" << to_string(sumBotton) << endl;
+		static ofstream out("temp.txt");
+		str1 += " - ";
+		str1 += to_string(it_VaildItem->first);
+		out << str1 << "  value :" << to_string(sumBotton) << endl;
+
 		//建立新的子樹
 		FP_Tree mNewFP_Tree(MinSup, str1);
 		for (int index = 0; index < index_ListArr; index++)

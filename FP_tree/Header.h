@@ -13,5 +13,8 @@
 #include <queue>
 #include <ctime>
 #include <ostream>
+#include <istream>
+#include <thread>
+//#include <boost\asio.hpp>
 
 #endif

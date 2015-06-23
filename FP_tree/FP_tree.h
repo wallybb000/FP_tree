@@ -59,14 +59,14 @@ class FP_Tree{
 
 
 	typedef map< int, ValueAndList> VaildItem;
-	typedef map < int, list<Node *> > ItemidToList;
+	//typedef map < int, list<Node *> > ItemidToList;
 
 private:
 	int MinSup;
 
 	auto_ptr<Node>  NodePool;
 	int NodeAmount;
-	map<int, int> NodeValueList;
+	//map<int, int> NodeValueList;
 
 
 	VaildItem EachItemList;
@@ -101,10 +101,10 @@ public:
 	void setMinSup(int i){ MinSup = i; }
 	int getMinSup(){ return MinSup; }
 	void insertNode(list<int> &inputList, int &value);
+	void upScanFromItem(ValueAndList & vaildItem);
 	void Loop();
 	void Serialization(stringstream & SerialString);
 	void insertNodeFromSerial(stringstream & SerialString);
-
 };
 
 #endif

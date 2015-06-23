@@ -17,8 +17,9 @@ public:
 
 	int allItemTable[15000];
 
-	DB_Scanner(char * inFileName, double minsup);
-
+	DB_Scanner();
+	void setFileName(string iFileName);
+	void setMinSup(int iMinSup);
 	void firstCheck();
 	bool openBinaryDatabase();
 	bool readLine(list<int> &inArr);

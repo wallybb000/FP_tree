@@ -19,23 +19,23 @@ public:
 
 
 	SOCKET sListen; //listening for an incoming connection
-	SOCKET sConnect[10]; //operating if a connection was found
+	SOCKET sConnect; //operating if a connection was found
 
 	SOCKADDR_IN addr;
-	SOCKADDR_IN clinetAddr[10];
 
 	int clinetCount;
 
-	SocketClass(int type);
-	
+	SocketClass();
+	void setType(int type);
+
 	void Listen();
 	
-	void Accept();
-	void Send(char * message, int len, int clinetId);
+	SOCKET& Accept();
+	void Send(SOCKET &clientSocket,char * message, int len );
 
 
 	void Connect();
-	void receive(char ** message, int &len);
+	void receive(SOCKET &clientSocket,char ** message, int &len);
 
 };
 #endif
