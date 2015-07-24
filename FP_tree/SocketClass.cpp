@@ -44,9 +44,9 @@ SOCKET& SocketClass::Accept()
 	SOCKADDR_IN clientAddr;
 
 
-	//clientAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
-	//clientAddr.sin_family = AF_INET;
-	//clientAddr.sin_port = htons(1234);
+	clientAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
+	clientAddr.sin_family = AF_INET;
+	clientAddr.sin_port = htons(1235);
 
 	int addrlen = sizeof(clientAddr);
 	if ((*clientSocket)=accept(sListen, (SOCKADDR*)&clientAddr, &addrlen))

@@ -13,22 +13,22 @@ public:
 	int itemId;//該node中的Item編號(非唯一)
 	int value;
 
-	IDtoNode & dchildByItem;
+	//IDtoNode & dchildByItem;
 	IDtoNode childByItem;
 	int childAmount;
 	int high;
 	Node* parent;
-	Node* Next;
+	//Node* Next;
 public:
 	Node(int NId, int ItemID, Node * Parent)
-		:nodeId(NId), itemId(ItemID), parent(Parent), childAmount(0), value(-1), dchildByItem(childByItem){
-	};
+		:nodeId(NId), itemId(ItemID), parent(Parent), childAmount(0), value(-1)// ,dchildByItem(childByItem)
+		{};
 
 	~Node(){
 	}
 
 	void insertChild(Node * input){
-		childByItem.insert(IDandNode(childAmount, input));
+		childByItem.insert(IDandNode(input->itemId, input));
 		childAmount++;
 	};
 

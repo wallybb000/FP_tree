@@ -6,14 +6,21 @@
 
 #define AMOUNT_OF_CHILDRENTABLE 200000
 
-struct ValueAndList
+struct ValueAndPtrList
 {
-	ValueAndList() :value(0){};
-	ValueAndList(int iValue, list<Node*> iList) :mList(iList), value(iValue){};
+	ValueAndPtrList() :value(0){};
+	ValueAndPtrList(int iValue, list<Node*> iList) :mList(iList), value(iValue){};
 	int value;
 	list < Node * > mList;
+};
 
 
+struct ValueAndIntList
+{
+	ValueAndIntList() :value(0){};
+	ValueAndIntList(int iValue ,list<int> iList) :mList(iList), value(iValue){};
+	int value;
+	list <int> mList;
 };
 
 class StringAndValue
@@ -58,37 +65,34 @@ public:
 class FP_Tree{
 
 
-	typedef map< int, ValueAndList> VaildItem;
-	//typedef map < int, list<Node *> > ItemidToList;
+	typedef map< int, ValueAndPtrList> VaildItem;
 
 private:
 	int MinSup;
-
-	auto_ptr<Node>  NodePool;
 	int NodeAmount;
-	//map<int, int> NodeValueList;
+	int ItemCount;//For CFPTree
+	auto_ptr<Node>  NodePool;
+	ostream * pOstream;
+	
 
 
-	VaildItem EachItemList;
+	VaildItem ItemTable;
 	const int MaxNodes = 1000;
 	const int MaxItems = 500;
 
-
 public:
-	bool isStraight;
 	string TreeName;
-
-	FP_Tree() :NodePool(new Node(-1, -1, NULL)), isStraight(true)
+	FP_Tree() :NodePool(new Node(-1, -1, NULL)), pOstream(NULL)
 	{
 		NodeAmount = 0;
 	};
-	FP_Tree(int Minsup, string  &name)
-		:NodePool(new Node(-1, -1, NULL)), NodeAmount(0), MinSup(Minsup), TreeName(name), isStraight(true)
+	FP_Tree(int Minsup, string  &name,ostream* ipOstream)
+		:NodePool(new Node(-1, -1, NULL)), NodeAmount(0), MinSup(Minsup), TreeName(name), pOstream(ipOstream)
 	{
 	};
 	~FP_Tree(){
 		
-		for(auto & item :EachItemList)
+		for(auto & item :ItemTable)
 			for (auto& ptr : item.second.mList)
 			{
 				Node* temp = ptr;
@@ -98,13 +102,33 @@ public:
 
 	}
 
+	void setOstream(ostream * ipOstream){ this->pOstream = ipOstream; }
 	void setMinSup(int i){ MinSup = i; }
 	int getMinSup(){ return MinSup; }
-	void insertNode(list<int> &inputList, int &value);
-	void upScanFromItem(ValueAndList & vaildItem);
+	int getItemCount(){ return ItemCount; }
+	
+
+	void insertNode(list<int> &inputList, int value);
+	int upScanFromItem(ValueAndPtrList &item,vector<ValueAndIntList> & buildingListArr);
 	void Loop();
+	
+
+	// for Network communication
 	void Serialization(stringstream & SerialString);
 	void insertNodeFromSerial(stringstream & SerialString);
+
+
+
+	//for CFPTree
+	void insertFromTree(FP_Tree & inFPTree);
+	void DivideByLoopOnce(vector<FP_Tree*> & subFPTree_Arr,ofstream * outStream);
+	void mergeLoop(Node & A,Node & B);
+
 };
+
+
+
+
+
 
 #endif
